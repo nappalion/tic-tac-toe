@@ -13,6 +13,64 @@ function GameBoard() {
 
   const getBoard = () => board;
 
+  const checkWin = (player) => {
+    // Horizontal
+    for (let i = 0; i < rows; i++) {
+      let piecesInRow = 0;
+      for (let j = 0; j < cols; j++) {
+        const piece = board[i][j];
+        if (piece.getValue() === player) {
+          piecesInRow += 1;
+        }
+      }
+      if (piecesInRow === 3) {
+        return true;
+      }
+    }
+
+    // Vertical
+    for (let j = 0; j < rows; j++) {
+      let piecesInCol = 0;
+      for (let i = 0; i < cols; i++) {
+        const piece = board[i][j];
+        if (piece.getValue() === player) {
+          piecesInCol += 1;
+        }
+      }
+      if (piecesInCol === 3) {
+        return true;
+      }
+    }
+
+    // Main Diagonal \
+    let piecesInMainDiag = 0;
+    for (let i = 0; i < rows; i++) {
+      const piece = board[i][i];
+      if (piece.getValue() === player) {
+        piecesInMainDiag += 1;
+      }
+    }
+    if (piecesInMainDiag === 3) {
+      return true;
+    }
+
+    // Leading Diagonal /
+    let piecesInLeadDiag = 0;
+    for (let i = 0; i < rows; i++) {
+      for (let j = cols - 1; j >= 0; j--) {
+        const piece = board[i][j];
+        if (piece.getValue() === player) {
+          piecesInLeadDiag += 1;
+        }
+      }
+      if (piecesInLeadDiag === 3) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
   const placePiece = (row, col, player) => {
     if (
       row >= 0 &&
@@ -35,11 +93,10 @@ function GameBoard() {
         lineToPrint += board[i][j].getValue();
       }
       console.log(lineToPrint);
-      console.log("------");
     }
   };
 
-  return { getBoard, placePiece, printBoard };
+  return { getBoard, placePiece, printBoard, checkWin };
 }
 
 // Each cell holds a value: 0-no player; 1/2-player
@@ -60,6 +117,7 @@ function GameController(
   playerTwoName = "Player Two"
 ) {
   const board = GameBoard();
+  let gameComplete = false;
 
   const players = [
     {
@@ -86,17 +144,31 @@ function GameController(
   };
 
   const playRound = (row, column) => {
-    console.log(
-      `Placing ${
-        getActivePlayer().name
-      }'s piece into row [${row}] and column [${column}]`
-    );
-    board.placePiece(row, column, activePlayer.piece);
+    if (!gameComplete) {
+      console.log(
+        `Placing ${
+          getActivePlayer().name
+        }'s piece into row [${row}] and column [${column}]`
+      );
+      board.placePiece(row, column, activePlayer.piece);
 
-    switchPlayerTurn();
-    printNewRound();
+      if (board.checkWin(activePlayer.piece)) {
+        gameComplete = true;
+        return false;
+      }
+
+      switchPlayerTurn();
+      printNewRound();
+      return true;
+    } else {
+      console.log(`Sorry, ${activePlayer.name} already won the game.`);
+      return false;
+    }
   };
 
   return { playRound, getActivePlayer };
 }
 
+function ScreenController() {
+  const game = GameController();
+}
