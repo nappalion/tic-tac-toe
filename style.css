@@ -1,0 +1,26 @@
+.board {
+  width: fit-content;
+  display: grid;
+  grid-template: repeat(3, 50px) / repeat(3, 50px);
+  gap: 5px;
+  background-color: black;
+}
+
+.board div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 30px;
+}
+
+.player-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.player-form input {
+  width: 400px;
+  margin-bottom: 10px;
+}
